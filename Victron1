@@ -1,0 +1,30 @@
+alias: Victron ESS - test
+description: ""
+trigger:
+  - platform: state
+    entity_id:
+      - sensor.spot_electricity_is_cheapest_2_hours_block
+    to: "on"
+condition: []
+action:
+  - choose:
+      - conditions:
+          - condition: numeric_state
+            entity_id: sensor.energy_production_today
+            below: 10
+        sequence:
+          - service: modbus.write_register
+            data:
+              address: 2901
+              slave: 100
+              hub: cerbo
+              value: 600
+      - conditions: []
+        sequence:
+          - service: modbus.write_register
+            data:
+              address: 2901
+              slave: 100
+              hub: cerbo
+              value: 300
+mode: single
